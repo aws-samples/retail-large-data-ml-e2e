@@ -18,7 +18,7 @@
   "dependencies": {
     "@aws-cdk/aws-glue-alpha": "^2.79.1-alpha.0",
     "@aws-cdk/aws-lambda-python-alpha": "^2.79.1-alpha.0",
-    "aws-cdk-lib": "^2.79.1",
+    "aws-cdk-lib": "^2.80.0",
     "constructs": "^10.0.0",
     "source-map-support": "^0.5.21"
   }
