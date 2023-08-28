@@ -1,0 +1,1 @@
+SELECT * FROM stores LIMIT 1;
