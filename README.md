@@ -1,4 +1,4 @@
-# 本ソリューション (End2End Data Solution for Retail Industory) について
+# 本ソリューション (End2End Data Solution for Retail Industry) について
 
 本ソリューションは、小売業（リテール業）での発注業務を想定ユースケースとした予測を実現するソリューションです。過去のデータを基に予測を提供し、店舗管理者（店長）や、本部の発注担当者等が簡単にデータに基づいた発注を可能にするためのサンプル構成をオープンソースで提供します。ライセンスは[LICENSE.txt](LICENSE.txt)を確認してください。
 
