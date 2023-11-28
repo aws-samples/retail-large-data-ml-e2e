@@ -15,7 +15,7 @@ WITH all_1w AS (
     VAR_SAMP(ds.total_quantity) OVER (PARTITION BY ds.product_id, ds.store_id) AS var
   FROM daily_quantity ds
   WHERE ds.transaction_date > DATE('<PROCESSING_DATE>') - interval '7 days'
-  AND ds.transaction_date <= DATE('<PROCESSING_DATE>')
+  AND ds.transaction_date < DATE('<PROCESSING_DATE>') + interval '1 days'
 ),
 all_2w AS (
   SELECT
@@ -26,7 +26,7 @@ all_2w AS (
     VAR_SAMP(ds.total_quantity) OVER (PARTITION BY ds.product_id, ds.store_id) AS var
   FROM daily_quantity ds
   WHERE ds.transaction_date > DATE('<PROCESSING_DATE>') - interval '14 days'
-  AND ds.transaction_date <= DATE('<PROCESSING_DATE>')
+  AND ds.transaction_date < DATE('<PROCESSING_DATE>') + interval '1 days'
 )
 SELECT 
   ds_today.product_id,
