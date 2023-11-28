@@ -2,6 +2,7 @@ from aws_lambda_powertools import Logger
 import boto3, os, json, io
 from urllib.parse import urlparse
 import pandas as pd
+import re
 
 
 logger = Logger(service="postinference", level="DEBUG")
@@ -27,9 +28,22 @@ def delete_files(dest_bucket_name, dest_filekey):
         return
 
     bucket = s3.Bucket(dest_bucket_name)
-    objects_to_delete = [{"Key": obj.key} for obj in bucket.objects.filter(Prefix=directory_name)]
+    objects_to_delete = [
+        {"Key": obj.key} for obj in bucket.objects.filter(Prefix=directory_name)
+    ]
     if objects_to_delete:
         bucket.delete_objects(Delete={"Objects": objects_to_delete})
+
+
+def read_and_combine_json(json_text):
+    json_strings = re.findall(r"\{.*?\}", json_text)
+
+    combined_predictions = []
+    for json_str in json_strings:
+        data = json.loads(json_str)
+        combined_predictions.extend(data["prediction"])
+
+    return combined_predictions
 
 
 @logger.inject_lambda_context
@@ -44,7 +58,9 @@ def handler(event, context):
         filename = os.path.basename(obj.key)
         dt = env.get("PROCESSING_DATE")
 
-        dest_filekey = f"year={dt[:4]}/month={dt[5:7]}/day={dt[8:10]}/{filename}.out.csv"
+        dest_filekey = (
+            f"year={dt[:4]}/month={dt[5:7]}/day={dt[8:10]}/{filename}.out.csv"
+        )
         data_filekey = s3_path_join(data_prefix, filename)
         out_filekey = s3_path_join(out_prefix, event.get("jobname"), filename + ".out")
 
@@ -55,16 +71,19 @@ def handler(event, context):
         logger.debug(f"Get inference input data from {data_bucket_name} {data_filekey}")
         csv_obj = s3.Object(data_bucket_name, data_filekey)
         csv_data = pd.read_csv(
-            io.StringIO(csv_obj.get()["Body"].read().decode()), usecols=[0, 1], header=None
+            io.StringIO(csv_obj.get()["Body"].read().decode()),
+            usecols=[0, 1],
+            header=None,
         )  # usecols are product_id, store_id
 
         logger.debug(f"Get prediction data from {out_bucket_name}, {out_filekey}")
         json_obj = s3.Object(out_bucket_name, out_filekey)
-        json_data = json.loads(json_obj.get()["Body"].read().decode())
+        json_text = json_obj.get()["Body"].read().decode()
+        predictions = read_and_combine_json(json_text)
 
         logger.debug(f"Uploading file to {dest_bucket_name} {dest_filekey}.out.csv")
         csv_data["processingdate"] = env.get("PROCESSING_DATE")
-        csv_data["prediction"] = json_data["prediction"]
+        csv_data["prediction"] = predictions
         csv_buffer = io.StringIO()
         csv_data.to_csv(csv_buffer, index=False, header=None)
         delete_files(dest_bucket_name, dest_filekey)
