@@ -17,6 +17,7 @@ export interface WorkFlowProps {
   trainingImageRepoUri: string;
   trainingInstanceType: string;
   inferenceInstanceType: string;
+  inferenceInstanceCount: number;
   rs: Redshift;
   ml: ML;
   salesPredictionDatabase: SalesPredictionDatabase;
@@ -113,6 +114,7 @@ export class WorkFlow extends Construct {
         ROLEARN_FOR_SAGEMAKER: this.ml.role.roleArn,
         TRAINING_INSTANCE_TYPE: props.trainingInstanceType,
         INFERENCE_INSTANCE_TYPE: props.inferenceInstanceType,
+        INFERENCE_INSTANCE_COUNT: String(props.inferenceInstanceCount),
         GLUE_CRAWLER: props.salesPredictionDatabase.crawlerName
       }
     });

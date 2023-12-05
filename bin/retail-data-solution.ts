@@ -9,10 +9,12 @@ const trainingImageRepoUri = app.node.tryGetContext('trainingImageRepoUri');
 const quickSightAdminArn = app.node.tryGetContext('quickSightAdminArn');
 const trainingInstanceType = app.node.tryGetContext('trainingInstanceType');
 const inferenceInstanceType = app.node.tryGetContext('inferenceInstanceType');
+const inferenceInstanceCount = app.node.tryGetContext('inferenceInstanceCount');
 
 new RetailDataSolutionStack(app, 'RetailDataSolutionStack', {
   trainingImageRepoUri: trainingImageRepoUri,
   quickSightAdminArn: quickSightAdminArn,
   trainingInstanceType: trainingInstanceType,
-  inferenceInstanceType: inferenceInstanceType
+  inferenceInstanceType: inferenceInstanceType,
+  inferenceInstanceCount: inferenceInstanceCount
 });

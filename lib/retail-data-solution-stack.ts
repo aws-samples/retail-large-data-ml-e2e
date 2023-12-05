@@ -15,6 +15,7 @@ interface RetailDataSolutionStackProps extends cdk.StackProps {
   quickSightAdminArn: string;
   trainingInstanceType: string;
   inferenceInstanceType: string;
+  inferenceInstanceCount: number;
 }
 export class RetailDataSolutionStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: RetailDataSolutionStackProps) {
@@ -64,6 +65,7 @@ export class RetailDataSolutionStack extends cdk.Stack {
       trainingImageRepoUri: props.trainingImageRepoUri,
       trainingInstanceType: props.trainingInstanceType,
       inferenceInstanceType: props.inferenceInstanceType,
+      inferenceInstanceCount: props.inferenceInstanceCount,
       rs: rs,
       ml: ml,
       salesPredictionDatabase: salesPredictionDatabase
