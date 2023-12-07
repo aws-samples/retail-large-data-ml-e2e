@@ -35,7 +35,9 @@ def handler(event, context):
     env = event.get("environments")
     dataset_url = env.get("ML_SOURCE_S3URL_INFERENCE")
     bucket_name = delete_empty_files(dataset_url)
-    model_url = s3_path_join(env.get("TRAINING_OUT_S3URL"), event.get("jobname"), "output", "model.tar.gz")
+    model_url = s3_path_join(
+        env.get("TRAINING_OUT_S3URL"), event.get("jobname"), "output", "model.tar.gz"
+    )
     train_model_id, train_model_version = "lightgbm-regression-model", "*"
     deploy_image_uri = image_uris.retrieve(
         region=None,
@@ -45,7 +47,11 @@ def handler(event, context):
         model_version=train_model_version,
         instance_type=env.get("INFERENCE_INSTANCE_TYPE"),
     )
-    deploy_source_uri = script_uris.retrieve(model_id=train_model_id, model_version=train_model_version, script_scope="inference")
+    deploy_source_uri = script_uris.retrieve(
+        model_id=train_model_id,
+        model_version=train_model_version,
+        script_scope="inference",
+    )
     sm_model = model.Model(
         deploy_image_uri,
         model_data=model_url,
@@ -56,7 +62,7 @@ def handler(event, context):
         entry_point="inference.py",
     )
     sm_transformer = sm_model.transformer(
-        instance_count=1,
+        instance_count=int(env.get("INFERENCE_INSTANCE_COUNT", 1)),
         instance_type=env.get("INFERENCE_INSTANCE_TYPE"),
         output_path=s3_path_join(env.get("INFERENCE_OUT_S3URL"), event.get("jobname")),
     )

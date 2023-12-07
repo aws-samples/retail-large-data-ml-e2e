@@ -50,6 +50,7 @@
     "trainingImageRepoUri": "763104351884.dkr.ecr.ap-northeast-1.amazonaws.com/pytorch-training:1.9.0-cpu-py38",
     "trainingInstanceType": "ml.m5.xlarge",
     "inferenceInstanceType":  "ml.m5.xlarge",
+    "inferenceInstanceCount": 2,
     "quickSightAdminArn": "arn:aws:quicksight:ap-northeast-1:<ACCOUNTID>:user/default/<UserName>"
   }
 }

@@ -18,6 +18,7 @@ ML_INFERENCE_OUT_BUCKET_NAME = os.environ["ML_INFERENCE_OUT_BUCKET_NAME"]
 DESTINATION_BUCKET_NAME = os.environ["DESTINATION_BUCKET_NAME"]
 TRAINING_INSTANCE_TYPE = os.environ["TRAINING_INSTANCE_TYPE"]
 INFERENCE_INSTANCE_TYPE = os.environ["INFERENCE_INSTANCE_TYPE"]
+INFERENCE_INSTANCE_COUNT = os.environ["INFERENCE_INSTANCE_COUNT"]
 GLUE_CRAWLER = os.environ["GLUE_CRAWLER"]
 
 JST = timezone(timedelta(hours=+9), "JST")
@@ -28,7 +29,9 @@ def handler(event, context):
     logger.debug(event)
     specified_date = event.get("processingDate")
     if specified_date is None:
-        processing_date = (datetime.now(JST) - timedelta(days=1)).strftime("%Y-%m-%d")  # defaultは昨日
+        processing_date = (datetime.now(JST) - timedelta(days=1)).strftime(
+            "%Y-%m-%d"
+        )  # defaultは昨日
     else:
         processing_date = specified_date
 
@@ -47,6 +50,7 @@ def handler(event, context):
         "PROCESSING_DATE": processing_date,
         "TRAINING_INSTANCE_TYPE": TRAINING_INSTANCE_TYPE,
         "INFERENCE_INSTANCE_TYPE": INFERENCE_INSTANCE_TYPE,
+        "INFERENCE_INSTANCE_COUNT": INFERENCE_INSTANCE_COUNT,
         "GLUE_CRAWLER": GLUE_CRAWLER,
     }
     sfn.start_execution(stateMachineArn=STEPFUNCTION_ARN, input=json.dumps(sfn_input))
